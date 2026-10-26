@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arriving in China</title>
+  <style>
+    :root {
+      --paper: #f7f3ee;
+      --ink: #1d2a33;
+      --muted: #5d6b73;
+      --red: #b3262d;
+      --line: #d9d2c7;
+      --field: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--red);
+      color: #fff;
+      padding: 3rem 1.5rem 2.5rem;
+    }
+
+    header div, main { max-width: 640px; margin: 0 auto; }
+
+    h1 {
+      margin: 0 0 .5rem;
+      font-size: clamp(2rem, 6vw, 3rem);
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    header p { margin: 0; font-size: 1.1rem; opacity: .9; }
+
+    main { padding: 2rem 1.5rem 4rem; }
+
+    fieldset {
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      margin: 0;
+      padding: 1.5rem 0;
+    }
+
+    legend, label.q {
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 0;
+      margin-bottom: .6rem;
+      display: block;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: .95rem;
+      margin: 0 0 .8rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: .75rem .9rem;
+      font: inherit;
+      color: var(--ink);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    input + input, textarea + textarea { margin-top: .75rem; }
+
+    input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+      outline: 3px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    .problems input { margin-bottom: .75rem; }
+
+    button {
+      margin-top: 1.75rem;
+      padding: .85rem 2rem;
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: var(--red);
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover { background: #8f1d23; }
+
+    #thanks {
+      display: none;
+      margin-top: 2rem;
+      padding: 1.25rem;
+      background: #fff;
+      border-left: 5px solid var(--red);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Arriving in China</h1>
+      <p>Tell us about yourself and what was hard when you first arrived.</p>
+    </div>
+  </header>
+
+  <main>
+    <form id="survey">
+
+      <fieldset>
+        <label class="q" for="nationality">1. What is your nationality?</label>
+        <input type="text" id="nationality" name="nationality" placeholder="For example: Vietnamese" required>
+      </fieldset>
+
+      <fieldset>
+        <label class="q" for="age">2. How old are you?</label>
+        <input type="number" id="age" name="age" min="1" max="120" placeholder="For example: 24" required>
+      </fieldset>
+
+      <fieldset class="problems">
+        <legend>3. What three problems did you find when you arrived in China?</legend>
+        <p class="hint">Write one problem in each box.</p>
+        <input type="text" name="problem1" aria-label="Problem 1" placeholder="Problem 1" required>
+        <input type="text" name="problem2" aria-label="Problem 2" placeholder="Problem 2" required>
+        <input type="text" name="problem3" aria-label="Problem 3" placeholder="Problem 3" required>
+      </fieldset>
+
+      <button type="submit">Send my answers</button>
+      <p id="thanks" role="status">Thank you! Your answers have been sent.</p>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('survey');
+    const thanks = document.getElementById('thanks');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      thanks.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        });
+        if (!res.ok) throw new Error((await res.json()).error);
+        thanks.textContent = 'Thank you! Your answers have been saved.';
+        form.reset();
+      } catch (err) {
+        thanks.textContent = 'Could not save: ' + err.message;
+      }
+      thanks.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
