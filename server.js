@@ -1,3 +1,6 @@
+// Load local env files (created by `neon deploy`) if they exist. Online hosts use real env vars.
+for (const f of ['.env.local', '.env']) { try { process.loadEnvFile(f); } catch {} }
+
 const express = require('express');
 const fs = require('fs/promises');
 const path = require('path');
